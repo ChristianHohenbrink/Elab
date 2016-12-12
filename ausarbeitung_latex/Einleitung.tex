@@ -1,14 +1,43 @@
 \chapter{Einleitung}
-\textit{kursiver Text} \\
-\texttt{besonderer Text} \\
-normaler Text
-\begin{itemize}
-\item[\textbf{1)}] \textbf{Aufzählung1}\\
-Text der Aufzählung
-\item [\textbf{2)}]\textbf{Aufzählung2}
-\item [\textbf{3)}]\textbf{Aufzählung3}
-\item [\textbf{4)}]\textbf{Aufzählung4}
-\item [\textbf{5)}]\textbf{Aufzählung5}
-\end{itemize}
-Quellenverlinkung \cite{UCS_XDL_UseCaseSenarios}
+\section{Einführung in die Thematik}
+Am Fachgebiet Rechnersysteme der TU Darmstadt und der Professsur für eingebettete Systeme der TU Dresden wurde der CPU-Core
+SpartanMC entwickelt, welcher mit einer Daten- und Instruktionsbreite von 18 Bit ideal für die Verwendung in FPGAs geeignet ist. %TODO: auf SPMC-Seite verweisen???
+Ebenso wurde eine Toolchain entwickelt, die es dem Nutzer ermöglicht über die grafische Oberfläche JConfig Systeme zu beschreiben und
+im Anschluss über Make-Regeln weitere Schritte wie Synthese und Simulation durchzuführen.\\
+Der SpartanMC wir am Fachgebiet Rechnersysteme zur Forschung an Manycore SoC verwendet. Eine dieser Forschungsarbeiten stellt das Programm \textmu\/Streams da,
+welches auf Basis des Source-to-Source Compilers Cetus entwickelt wurde, um die Leistungsfähigkeit von Manycore Systemen zu steigern. %TODO: auf CETUS-Seite verweisen???
+Hierzu kann der Programmierer den Sourcecode mit Annotationen versehen, die den Code in verschieden Aufgabenblöcke unterteilt. Dabei ergibt sich
+eine Pipeline-Struktur, in der die Ergebnisse einzelener Berechnungen über Core-Konnektroren weitergegeben werden.
+\textmu\/Streams kann sowohl eine Hardwarebeschreibung für ein Manycore System generieren, als auch Software für die einzelenen Cores, 
+welche mit der SpartanMC Toolchain konform sind.\\
+\section{Ziele der Arbeit}
+Um zu zeigen, dass diese Art der Perfromancesteigerung nicht nur auf den SpartanMC begrenzt ist, ist das primäre Ziel dieser Arbeit, den Xilinx Microblaze 
+in die bestehende SpartanMC Toolchain zu integerieren.\\
+Hierzu soll die Konfiguration des Microblaze über den SpartanMC Systembuilder JConfig ermöglicht werden. Ebenso ist es erforderlich, für einfache
+I/O-Anwendungen einen UART IP-Core für den Microblaze zu integrieren. Als Pendant zu den Core-Konnektoren soll es ebenfalls möglich sein FSL-Blöcke von Xilinx
+dem System hinzuzufügen, um die Kommunikation zwischen den einzelnen Prozessoren zu ermöglichen.\\
+Sollte es für die Integration notwendig sein, ist die Toolchain ebenfalls anzupassen, um die Generierung von lauffähigen Microblaze Systemen zu ermöglichen.
+Hierbei ist darauf zu achten, dass die Funktionalität sowohl für Systeme, die nur aus SpartanMC oder Microblaze bestehen, als auch für Systeme, die beide Prozessoren beinhalten, 
+nicht negativ beeinflusst wird.\\\\
+Optional wäre es wünschenswert, die erfolgreiche Paralellisierung eines Microblaze Programms durch \textmu\/Streams zu zeigen. Hierzu wäre es notwendig, 
+\textmu\/Streams soweit anzupassen, dass eine entsprechende Hardwarekonfiguration mit den neu integrierten Komponenten erstellt werden kann und
+die Aufrufe der Core-Konnektoren durch Aufrufe der FSL-Blöcke ersetzt werden.
+\section{Gliederung der Arbeit}
+Im folgenden Kapitel werden die Grundlagen für diese Arbeit beschrieben. Diese umfasst neben der Beschreibung der verwendeten Software-Tools, die Erläuterungen zum
+Aufbau der SpartanMC Toolchain, sowie Erklärungen zu verwendeten Dateiformaten und Busbeschreibungen. Anschließend wird ein Konzept mit allen notwendigen Schritten 
+für die Integration des Microblaze in die SpartanMC Toolchain erarbeitet. Das darauffolgende Kapitel beschreibt die Realisierung dieser Konzepte. In einem weiteren 
+Abschnitt wird auf alle notwendigen Schritte eingegangen, um ein lauffähiges System zu generieren. Darauf folgend wird eine Evaluation zum Grad der erreichten Integration
+durchgeführt. Abschließend folgt ein kurzer Ausblick auf mögliche Fortsetzungen der Arbeit, sowie eine kurze Zusammenfassung.
+%\textit{kursiver Text} \\
+%\texttt{besonderer Text} \\
+%normaler Text
+%\begin{itemize}
+%\item[\textbf{1)}] \textbf{Aufzählung1}\\
+%Text der Aufzählung
+%\item [\textbf{2)}]\textbf{Aufzählung2}
+%\item [\textbf{3)}]\textbf{Aufzählung3}
+%\item [\textbf{4)}]\textbf{Aufzählung4}
+%\item [\textbf{5)}]\textbf{Aufzählung5}
+%\end{itemize}
+%Quellenverlinkung \cite{UCS_XDL_UseCaseSenarios}
 
