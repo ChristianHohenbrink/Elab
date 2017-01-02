@@ -56,7 +56,7 @@ Neben dem Microblaze werden mit einem generischen Speichermodul, einem UART-Modu
 	\begin{tabular}{|l|p{10cm}|}
 		\hline \textbf{Parameter} & \textbf{Beschreibung} \\ 
 		\hline C\_FAMILY & Dieser Parameter wird von Xilinx IP-Cores verwendet, um, je nach verwendeter Hardware, vorhandene Primitives zu instantiieren. \\ 
-		\hline RAMBLOCKS & Ähnlich wie für den Speicher des SpartanMC, kann angegeben werden, wie viel RAM instantiiert werden soll. Ein Block ist jeweils 2KB groß. Es können nur Größen gewählt werden, die einer Potenz von zwei entsprechen, da mit jeder Vergrößerung des Speichers sich die Anzahl der Bitlanes verdoppelt.\\ 
+		\hline RAMBLOCKS & Ähnlich wie für den Speicher des SpartanMC, kann angegeben werden, wie viel RAM instantiiert werden soll. Ein Block ist jeweils 2KB groß. Es können nur Größen gewählt werden, die einer Potenz von Zwei entsprechen, da mit jeder Vergrößerung des Speichers sich die Anzahl der Bitlanes verdoppelt.\\ 
 		\hline C\_BASEADDRESS & Gibt die Startaddresse des Speichers an.\\ 
 		\hline 
 	\end{tabular}
@@ -89,7 +89,7 @@ Neben dem Microblaze werden mit einem generischen Speichermodul, einem UART-Modu
 		\hline C\_IMPL\_STYLE & Wenn dieser Parameter auf 0 gesetzt ist, wird der FIFO-Speicher mit LUT RAMs implementiert, andernfalls mit Block RAMs.   \\ 
 		\hline C\_USE\_CONTROLL & Bestimmt, ob das Steuerbit mit übertragen wird oder nicht.\\ 
 		\hline C\_FSL\_DWIDTH & Ist auf 32 Bit festgelegt, da andere Datenbreiten im Zusammenhang mit dem Microblaze wenig sinnvoll sind. \\ 
-		\hline C\_FSL\_DEPTH & Beschreibt die Größe des FIFO-Speichers. Diese ist von den Parametern C\_ASYNC\_CLKS und C\_IMPL\_STYLE abhängig. Dabei gibt es folgenden Fälle: C\_ASYNC\_CLKS=0 => 1-8192 annehmen. C\_ASNYNC\_CLKS=1 und C\_IMPL\_STYLE=0 => 16-128. C\_ASNYNC\_CLKS=1 und C\_IMPL\_STYLE=1 => 512-8192. Ist C\_ASNYNC\_CLKS=1 muss die Größe außerdem einer Potenz von zwei entsprechen.\\ 
+		\hline C\_FSL\_DEPTH & Beschreibt die Größe des FIFO-Speichers. Diese ist von den Parametern C\_ASYNC\_CLKS und C\_IMPL\_STYLE abhängig. C\_ASYNC\_CLKS=0 => 1-8192. C\_ASNYNC\_CLKS=1 und C\_IMPL\_STYLE=0 => 16-128. C\_ASNYNC\_CLKS=1 und C\_IMPL\_STYLE=1 => 512-8192. Ist C\_ASNYNC\_CLKS=1 muss die Größe außerdem einer Potenz von Zwei entsprechen.\\ 
 		\hline C\_READ\_CLOCK\_PERIOD & Wird automatisch aus dem Taktsignal berechnet. Wird genutzt um Timing Constraints für den asynchronen Pfad durch LUT RAMs zu erzuegen \\
 		\hline 
 	\end{tabular}
@@ -99,7 +99,15 @@ Neben dem Microblaze werden mit einem generischen Speichermodul, einem UART-Modu
 \end{table}
 
 \subsubsection{Implementation eines generischen Speichermoduls} \label{subsubsec:genMem}
-Bevor über eine Implementation eines generischen Speichermoduls nachgedacht werden kann, sollte zunächst, die Struktur des von Xilinx verwendeten Speichers erläutert werden.
+Bevor über eine Implementation eines generischen Speichermoduls nachgedacht werden kann, sollte zunächst die Struktur, des von Xilinx verwendeten Speichers erläutert werden. Hierzu wird Abbildung \ref{fig:XilinxMEM} herangezogen.
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{./bilder/XilinxMEM}
+\caption{Speicherstruktur der von Xilinx generierten Speichermodule}
+\label{fig:XilinxMEM}
+\end{figure}
+In der Abbildung sind einfache Blockschaltbilder für einen 4KByte und einen 8KByte großen Speicher dargestellt. Angefangen bei einer Mindestgröße von 2KByte verdoppelt sich die Anzahl der Block RAMs bei jeder Vergrößerung. Dabei halbiert sich jeweils die Größe der Bitlanes bis hin zu einem Minimum von eins bei einer maximalen Speichergröße von 64KByte. Die vom XPS generierten Modelle instantiieren immer eine fixe Anzahl an Block RAMs, sodass es nicht möglich ist, mit der selben Methode wie beim Microblaze eine generische Parametriserbarkeit herzustellen. Daher muss, auf Grundlage der elaborierten Modelle, ein generisches Speichermodul geschrieben werden, dessen Größe über einen Parameter festgelegt werden kann.\\
+Um dies zu erreichen, wird ein Verilog-Modul geschreiben, welches die Parameter \textit{RAMBLOCKS} und \textit{C\_FAMILY} hat. Über eine for-Schleife in einer generate-Umgebung werden entsprechend des Parameters \textit{RAMBLOCKS} Block RAMS instantiiert. Eine Funktion berechnet dabei aus dem Parameter die Breite der einzelenen Bitlanes. Um die Signalverbidungen zu realisieren, werden wires und regs deklariert, deren Größe mit \textit{RAMBLOCKS} skaliert. Über Indexing wird innerhalb der for-Schleife die Realisierung der einzelnen Bitlanes vorgenommen. Für das 4-Bit breite Write-Enable-Signal wird zusätzliche Kombinatorik hinzugefügt, da die Handhabung nicht durch einfaches Indexing umgesetzt werden kann.
 
 \subsection{Modulbeschreibungen}
 
