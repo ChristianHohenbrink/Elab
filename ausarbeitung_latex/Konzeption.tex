@@ -1,11 +1,58 @@
 \chapter{Konzeption}
+\section{Anforderungen}
+Ziel dieser Arbeit ist es, den Xilinx Microblaze in die bestehende SpartanMC Entwicklungsumgebung zu integrieren. Um den Prozessor in JConfig einbinden zu können, müssen zunächst sowohl eine Hardwarebeschreibung, als auch eine XML-Modulbeschreibung für den Microblaze erstellt werden. Dies ist ebenso erforderlich für den UART IP-Core und den FSL-Bus IP-Core. Bei der Erstellung der Hardwarebeschreibung und der XML-Modulbeschreibung, ist darauf zu achten, dass dem Nutzer es ermöglicht wird, die Parameter der neuen Komponenten konfigurieren zu können.\\
+Es ist außerdem erforderlich, dass Anpassungen an der SpartanMC Toolchain vorgenommen werden. Dies ist notwendig, um die automatische Speicherinitialisierung für den Microblaze zu ermöglichen, da die bestehende Methode der Speicherinitialisierung für den SpartanMC nicht ohne Änderungen für den Microblaze anwendbar ist. Desweiteren muss der Compiler für den Microblaze in die Toolchain integriert werden, da einige der Hardwarebeschleuniger über spezielle Instruktionen angesprochen werden. Eine Vielzahl von IP-Cores von Xilinx sind in VHDL verfasst. Da in der SpartanMC Entwicklungsumgebung IP-Cores bislang ausschließlich in Verilog verfasst wurden, ist es gegebenfalls notwendig Anpassungen an der Toolchain vorzunehmen, um VHDL Designs zu unterstützen.\\
+Optional wäre es wünschenswert, die erfolgreiche Paralellisierung eines Microblaze Programms durch \textmu\/Streams zu zeigen. Hierzu wäre es notwendig, 
+\textmu\/Streams soweit anzupassen, dass eine entsprechende Hardwarekonfiguration mit den neu integrierten Komponenten erstellt werden kann und
+die Aufrufe der Core-Konnektoren durch Aufrufe der FSL-Blöcke ersetzt werden.
 \section{Integration in JConfig}
+\subsection{Hardware}
+Bevor über die Integration nachgedacht werden kann, muss zunächst festgelegt werden, welche Hardware verwendet wird. Über die Jahre hat Xilinx diverse Versionen des Microblaze veröffentlicht. Die Implementationen des Prozessors sind allesamt verschlüsselt und können nur mit entsprechendem Schlüssel entschlüsselt werden. Mit der Einführung von Vivado und der Einstellung der Entwicklung von ISE änderte sich auch die Art der Verschlüsselung, sodass neuere Versionen des Microblaze nicht mehr von der alten Toolchain entschlüsselt werden können. Da die JConfig Toolchain allerdings Gebrauch von der ISE Toolchain macht, kommen für diese Arbeit nur der Microblaze v8.50c oder ältere Versionen in Frage.\\
+Ausgehend vom ISE Installationsverzeichnis, ist Verzeichnis für die IP-Cores an folgender Stelle zu finden: \textit{"14.7/ISE\_DS/EDK/hw/XilinxProcessorIPLib/pcores/"}. Dort sind alle Versionen des Microblaze, sowie alle Versionen anderer Hardware abgelegt. Für sämtliche verwendete IP-Cores werden die aktuellsten Versionen verwendet.
 \subsection{Hardwarebeschreibung}
 \subsubsection{Erzeugung der Hardwarebeschreibung mit XPS}
+Um den Microblaze in JConfig integrieren zu können, ist es zunächst notwendig, eine Hardwarebeschreibung zu erstellen, die den Microblaze instantiiert und parametrisiert.
+Diese kann entweder manuell erstellt werden oder mit XPS. In XPS kann dazu mit dem Base-System-Builder ein einfaches System erzeugt werden. Ein Beispiel für ein System ohne Peripherie ist in Abbildung \ref{fig:XPS_EXAMPLE} zu sehen.
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1\linewidth]{./bilder/XPS_EXAMPLE}
+\caption{Einfaches mit XPS generiertes System ohne Peripherie}
+\label{fig:XPS_EXAMPLE}
+\end{figure}
+Das System besteht aus einem Micorblaze, zwei LMB, zwei Speichercontroller (je einen für Daten und einen für Instruktionen), einem Block RAM, einem AXI4-Light-Bus, einem Reset-Core, einem Taktgenerator und einem Debug Modul. Um die Komplexität des Systems und somit zusätzliche Fehlerquellen zu reduzieren, werden der AXI4-Light-Bus, der Taktgenerator und das Debug Modul zunächst entfernt. Der AXI4-Bus wird nicht benötigt, da es zunächst in der SpartanMC Entwicklungsumgebung mit dem UART IP-Core nur eine Peripherie geben wird und diese direkt mit dem Prozessor verbunden werden kann. Der Taktgenerator wird nicht benötigt, da JConfig bereits über eigene Taktgeneratoren verfügt und das Debug Modul wird nicht benötigt, um die grundsätzliche Lauffähigkeit eines Microblaze Systems zu gewährleisten.\\
+Nun kann in XPS eine Netzliste erzeugt werden. Als Nebenprodukt werden Wrapperdateien erstellt, die die einzelnen Komponenten mit den, im XPS angegebenen Einstellungen instantiieren. Die erzeugten Dateien werden nach Möglichkeit in der präferierten Sprache erzeugt, allerdings funktioniert dies bei manchen Wrapper Dateien nicht und sie werden in VHDL generiert. Die Top-Level-Beschreibung, welche sämtliche Komponenten instanziiert und miteinander verbindet, kann allerdings auch in Verilog erzeugt werden. Desweiteren besitzt die Top-Level-Beschreibung lediglich die,im XPS als extern makierten Signale als Eingänge und Ausgänge. Die Wrapper Datei für das Block RAM stellt eine Besonderheit dar. Für das Block RAM wird nämlich, entsprechend der angegebenen Größe des Speichers, ein elaboriertes Modell erzeugt. Dieses Modell funktioniert nur für die angegebene Größe und lässt sich ohne großen Aufwand auch nicht ändern.\\
+Um nun eine konfigurierbare Hardwarebeschreibung zu erhalten, ist es notwendig, den Wrapper Dateien und der Top-Level-Beschreibung Parameter hinzuzufügen. So können bei der Instanziierung des Top-Level-Moduls Parameter übergeben werden, die dann wiederum bei der Instanziierung der einzelnen Komponenten des Systems an diese weitergegeben werden können. Ebenso ist es erforderlich, dass Signale die verwendet werden sollen, als Eingänge bzw. Ausgänge der Top-Level-Beschreibung hinzugefügt und über Signale mit der entsprechenden Komponente verbunden werden.\\
+Unter Berücksichtigung der XML-Modulbeschreibung, ist es notwendig, den Speicher als externes Modul zu handhaben, da die XML-Syntax keine integrierten Speicher unterstützt. Hierzu werden die Speichercontroller und das Block RAM in einem weiterem Modul zusammengefasst (siehe \ref{subsubsec:genMem}), sodass das Modul für den Microblaze noch aus den Instanzen für den Microblaze, den beiden LMB und dem Reset-Core besteht. Die LMB-Cores erlauben es mehr als einen Speicher an den Microblaze anzuschließen.\\
+Welche Parameter für die Konfiguration des Microblaze wichtig sind, wird im nächsten Abschnitt behandelt. 
+\subsubsection{Handhabung der Parameter}
+In diesem Kapitel wird behandelt, welche Parameter für die Konfiguration des Microblaze Systems wichtig sind.
+Für die Parameter des Microblaze wurde die Tabelle aus dem Abschnitt \textit{MicroBlaze Core Configurability} in Kapitel 3 des Microblaze Datenblattes <Referenz einfügen> herangezogen. Parameter, die in der Tabelle nur einen Wert in der Spalte \textit{Allowable Values} haben, werden fest auf diesen Wert gesetzt und können nicht vom Anwender verändert werden. In der Tabelle \ref{tab:MicParam} werden lediglich die Parameter behandelt, welche mehr als einen erlaubten Wert haben, allerdings trotzdem auf einen festen Wert gesetzt werden. Alle anderen Parameter, die nicht genannt werden, stehen dem Nutzer zur freien Konfiguration zur Verfügung. Erklärungen zu den Bedeutungen der einzelnen Parametern werden in Kurzform in der XML-Modulbeschreibung hinterlegt, sodass der Nutzer während der Erstellung eines Systems weiß, welche Funktion die einzelnen Parameter haben. Für detailliert Beschreibungen sei noch einmal auf das Datenblatt des Microblaze verwiesen.
+\begin{table}[ht!]
+\begin{tabular}{|l|c|p{10cm}|}
+\hline \textbf{Parameter} & Wert & Beschreibung \\ 
+\hline C\_LOCKSTEP\_SLAVE & 0 & Im Lockstep Modus können zwei oder mehrere \newline Microblaze das selbe Programm ausführen und die Ergebnisse miteinander vergleichen, um Hardwarefehler zu erkennen. Wird nicht benötigt.\\ 
+\hline C\_ENDIANNESS & 1 & Endianness wird auf Little Endian festgelegt. In XPS lässt sich dieser Wert nicht manuell verändern, dementsprechend wird auch unter JConfig darauf verzichtet.\\ 
+\hline C\_D\_AXI & 1 & Das AXI-Daten-Interface kann verwendet werden. \\ 
+\hline C\_I\_AXI & 1 & Das AXI-Instruktionen-Interface kann verwendet werden. (Nützlich bei externen Speicher) \\ 
+\hline C\_D\_PLB & 0 & Da bereits AXI verwendet wird, wird der PLB Bus nicht gebraucht und deshalb deaktiviert. \\ 
+\hline C\_I\_PLB & 0 & Siehe vorheriger Eintrag. \\ 
+\hline C\_D\_LMB & 1 & Das LMB-Daten-Interface kann verwendet werden. \\ 
+\hline C\_I\_LMB & 1 & Das LMB-Instruktionen-Interface kann verwendet werden. \\ 
+\hline C\_IPLB\_BUS\_EXCEPTION & 0 & Da der PLB nicht verwendet wird, werden die Exceptions auch nicht benötigt. \\ 
+\hline C\_DPLB\_BUS\_EXCEPTION & 0 & Siehe vorheriger Eintrag. \\ 
+\hline C\_ADDR\_TAG\_BITS & 17 & Das Datenblatt gibt kaum nützliche Informationen zu diesem Parameter, daher wird er auf den Default-Wert festgesetzt. \\ 
+\hline C\_DCACHE\_ADDR\_TAG & 17 & Siehe vorheriger Eintrag. \\ 
+\hline C\_USE\_EXT\_BRK & 0 & Siehe vorheriger Eintrag. \\ 
+\hline C\_USE\_EXT\_NM\_BRK & 0 & Siehe vorheriger Eintrag. \\ 
+\hline 
+\end{tabular}
+\caption{Parameter des Microblaze die mehr als einen erlaubten Wert haben, aber dennoch auf einen Wert festegelegt werden.}
+\label{tab:MicParam}
+\end{table}
 
-\subsubsection{Handhabung der Parameter des Microblaze}
+ 
 
-\subsubsection{Implementation eines generischen Speichermoduls}
+\subsubsection{Implementation eines generischen Speichermoduls} \label{subsubsec:genMem}
 
 \subsection{Modulbeschreibungen}
 
@@ -21,3 +68,4 @@
 \subsection{Weitere Änderungen an JConfig}
 
 \subsection{Änderungen an der Toolchain}
+
