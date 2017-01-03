@@ -12,8 +12,8 @@ Library hinzuzufügen, müssen zunächst Hardware Description Language (HDL) Dat
 Für jede Hardwarekomponente lassen sich sowohl Verbindungen zu anderen Komponenten, als auch Parameter definieren.
 Speicherbausteine haben mit der Angabe eines Pfades zur verwendeten Firmware noch eine weitere Konfigurationsmöglichkeit.\\
 Ist die Systembeschreibung abgeschlossen, können alle, von der SpartanMC Toolchain benötigten Dateien, generiert werden.
-Dies umfasst eine Top-Level Verilog Beschreibung der Konfiguration, in der sämtliche IP-Cores instantiiert, parametrisiert und mit
-einander verbunden werden. Desweiteren werden Linkerskripte für die einzelnen Speicher angelegt und C Headerdateien, die Informationen
+Dies umfasst eine Top-Level-Verilog-Beschreibung der Konfiguration, in der sämtliche IP-Cores instanziiert, parametrisiert und mit
+einander verbunden werden. Desweiteren werden Linkerskripte für die einzelnen Speicher angelegt und C-Headerdateien, die Informationen
 über Modulparameter und Peripherien beinhalten und beim Schreiben der Firmware genutzt werden können. Ebenfalls erstellt werden
 Makefiles, welche Konstanten definieren, die im weiteren Verlauf von der Maketoolchain verwendet werden. Es werden außerdem noch ein
 User Constraints File (UCF) und Dateien erstellt, welche für die Simulation des SoC relevant sind.
@@ -34,7 +34,7 @@ Eine XML-Modulbeschreibung ist folgendermaßen gegliedert:
 \begin{itemize}
 \item \textbf{Header}: Im Header werden generelle Informationen angegeben, wie Kategorie und Name der Hardware.
 \item \textbf{HDL}: In diesem Abschnitt wird angegeben, welche HDL-Dateien eingebunden werden sollen. Bei den Pfadangaben wird davon ausgegangen, dass sich die Dateien in einem Verzeichnis namens \textit{src} befinden, welches sich wiederum in dem Verzeichnis befindet, in dem die XML-Datei ist.
-\item \textbf{Parameters}: Darauf folgen können mehrere Parameter-Abschnitte. Jeder einzelne Abschnitt wird in JConfig als eigene Gruppe in der Parametersektion dargestellt. Für Parameter lassen sich diverse Einstellungen treffen. So können Parameter beispielsweise über eine Auswahl von Werten definiert werden oder der Wertebereiche begrenzt werden.
+\item \textbf{Parameters}: Darauf folgen können mehrere Parameter-Abschnitte. Jeder einzelne Abschnitt wird in JConfig als eigene Gruppe in der Parametersektion dargestellt. Für Parameter lassen sich diverse Einstellungen treffen. So können Parameter beispielsweise über eine Auswahl von Werten definiert oder der Wertebereiche begrenzt werden.
 \item \textbf{Ports}: Es können beliebig viele Ports-Abschnitte definiert werden. Dadurch wird die logische Zusammengehörigkeit der einzelnen Signale, die in einem jedem Abschnitt definiert sind, dargestellt. Einzelne Signale können mit einem Namen, Datenbreite und Richtung versehen werden.
 \item \textbf{Bus}: Busse ermöglichen es Signale zusammenzufassen und somit das User Interface (UI) etwas übersichtlicher zu gestalten und den Arbeitsaufwand, um einzelne Signale zu verbinden, zu reduzieren.
 \end{itemize} 
@@ -42,11 +42,11 @@ Außerdem gibt es noch einige besondere Konstrukte, welche nur für Module einer
 
 \section{Xilinx Embedded Development Kit}
 \subsection{Microblaze}
-Der Microblaze von Xilinx ist ein 32-Bit Softcore Prozessor mit einer Reduced Instruction Set Computer (RISC) Architektur und ist für die Verwendung mit Xilinx FPGAs optimiert. Abbildung \ref{fig:MicroblazeBSB} zeigt das Blockschaltbild des Prozessors.\\ %TODO referenz zum manual einfügen
+Der Microblaze von Xilinx ist ein 32-Bit Softcore Prozessor mit einer Reduced Instruction Set Computer (RISC) Architektur und ist für die Verwendung mit Xilinx FPGAs optimiert. Abbildung \ref{fig:MicroblazeBSB} zeigt das Blockschaltbild des Prozessors.\\
 \begin{figure}[h!]
 \centering
 \includegraphics[width=1\linewidth]{./bilder/MicroblazeBSB}
-\caption{Blockschaltbild des Microblaze}
+\caption{Blockschaltbild des Microblaze \cite{MBREF}}
 \label{fig:MicroblazeBSB}
 \end{figure}
 \noindent
@@ -55,35 +55,35 @@ Der Microblaze verfügt über 32 32-Bit general purpose Register, 32-Bit Instruk
 Neben diesen festen Eigenschaften ist der Microblaze über Parameter flexible konfigurierbar. So ist es beispielsweise möglich, über den Parameter C\_AREA\_OPTIMIZED die Anzahl der Pipelinestufen auf drei oder fünf festzulegen. Weitere Features des Microblaze sind in folgender Liste dargestellt:\\
 \begin{itemize}
 \item \textbf{Hardwarebeschleuniger}: Dem Microblaze steht dedizierte Hardware für verschieden Aufgaben zur Verfügung, die bei Bedarf per Parameter hinzugefügt werden. Dazu zählen ein Integer Dividierer, ein Integer Multiplizier, eine Floating Point Unit (FPU) und ein Barrel Shifter. In der Instruction Set Architecture (ISA) sind für die Hardwarebeschleuniger eigene Instruktionen vorgesehen (bsp. fmul für eine Gleitkomma Multiplikation).
-\item \textbf{MMU}: Der Microblaze verfügt über eine konfigurierbare Memory Management Unit (MMU). Dabei lassen stehen drei verschiedene Modi zur Verfügung: Usermode, Protection und Virtual. Außerdem verfügt die MMU über je einen Translation Lookaside Buffer (TLB) für Instruktionen und für Daten.
+\item \textbf{MMU}: Der Microblaze verfügt über eine konfigurierbare Memory Management Unit (MMU). Dabei stehen drei verschiedene Modi zur Verfügung: Usermode, Protection und Virtual. Außerdem verfügt die MMU über je einen Translation Lookaside Buffer (TLB) für Instruktionen und für Daten.
 \item \textbf{Caches}: Werden externe Speicher verwendet, kann der Microblaze auf Caches sowohl für Instruktionen, als auch für Daten zurückgreifen. Hierbei lassen sich Einstellungen wie Größe des Caches, Länge einer Cacheline und Datenbreite festlegen.
 \item \textbf{Speicher- und I/O-Zugriff}: Der Microblaze hat für Speicher- und I/O-Zugriffe verschiedene Möglichkeiten. Einerseits existiert der Local Memory Bus (LMB), ein Bus mit geringer Latenz, welcher für Zugriffe auf On-Chip Speicherblöcke gedacht ist. Das Advanced eXtensible Interface (AXI4) und der Processor Local Bus (PLB) sind sowohl für Speicher- als auch für I/O-Zugriffe nutzbar.
-Das Xilinx CacheLink (XCL) Interface ist als hochperformante Lösung für Zugriffe auf externe Speicher gedacht. Voraussetzung für die Nutzung ist, dass der Memory Controller, an den das XCL Interface angeschlossen ist FSL-Buffer implementiert.
-\item \textbf{Debugging}: Der Microblaze verfügt ebenfalls über die Möglichkeit zum Hardware Debugging, es wird allerdings ein zusätzliches externes Debugging Modul benötigt.
-\item \textbf{Streaming Interfaces}: Um Daten mit geringem Overhead zu übertragen, verfügt der Microblaze über die Streaming Interfaces AXI4-Stream und FSL. Für FSL muss ein Buffer zur Verfügung stehen um versendete Daten zu puffern.
+Das Xilinx CacheLink (XCL) Interface ist als hochperformante Lösung für Zugriffe auf externe Speicher gedacht. Voraussetzung für die Nutzung ist, dass der Memory Controller, an den das XCL Interface angeschlossen ist, FSL-Buffer implementiert.
+\item \textbf{Debugging}: Der Microblaze verfügt ebenfalls über die Möglichkeit zum Hardware Debugging, es wird allerdings ein zusätzliches externes Debugging-Modul benötigt.
+\item \textbf{Streaming Interfaces}: Um Daten mit geringem Overhead zu übertragen, verfügt der Microblaze über die Streaming Interfaces AXI4-Stream und FSL. Für FSL muss ein Buffer zur Verfügung stehen, um versendete Daten zu puffern.
 \item \textbf{Exceptions}: Der Microblaze kann so konfiguriert werden, dass bei bestimmten Ereignissen (bsp. Math Exceptions, Bus Exceptions, ...) Hardware Exceptions ausgelöst werden.
 \end{itemize}
-Für weitere Informationen kann das Handbuch des Microblaze zu Rate gezogen werden (Kapitel <Bitte Einfügen>). %TODO Referenz einfügen
+Für weitere Informationen kann das Handbuch des Microblaze zu Rate gezogen werden (\cite{MBREF} \textit{Kapitel 2 - Microblaze Architecture}).
 \subsection{XPS}
-Das Xilinx Platform Studio (XPS) ist der Systembuilder von Xilinx. Mit ihm lassen sich per grafischer Oberfläche SoC erstellen. Über einen Wizard kann zu Beginn ein Basis-System erstellt werden, welches sich danach einfach erweitern lässt. Aus einem Katalog von IP-Cores kann zusätzliche Hardware ausgewählt werden, welche dann über einen Wizard konfiguriert werden kann. Desweiteren bietet XPS einfache Möglichkeiten Komponenten untereinander zu verbinden, Adressen von I/O und Speicherblöcken anzupassen und Eingangs- und Ausgangssignale zu verwalten. Außerdem ist es möglich von der Nutzeroberfläche eine Netzliste zu generieren oder das Hardwaredesign (inclusive Bitfile) zum Software Development Kit (SDK) zu exportieren, um Firmware für das SoC zu schreiben.
+Das Xilinx Platform Studio (XPS) ist der Systembuilder von Xilinx. Mit ihm lassen sich per grafischer Oberfläche SoC erstellen. Über einen Wizard kann zu Beginn ein Basis-System erstellt werden, welches sich danach einfach erweitern lässt. Aus einem Katalog von IP-Cores kann zusätzliche Hardware ausgewählt werden, welche dann über einen Wizard konfiguriert werden kann. Desweiteren bietet XPS einfache Möglichkeiten Komponenten untereinander zu verbinden, Adressen von I/O und Speicherblöcken anzupassen und Eingangs- und Ausgangssignale zu verwalten. Außerdem ist es möglich von der Nutzeroberfläche eine Netzliste zu generieren oder das Hardwaredesign (inklusive Bitfile) zum Software Development Kit (SDK) zu exportieren, um Firmware für das SoC zu schreiben. \cite{MBTOOLS}
 \subsection{SDK}
-Mit dem SDK ist es möglich Software für den Microblaze zu erstellen. Basierend auf der exportierten Hardware kann das SDK ein Board Support Package (BSP), welches alle relevanten Treiber einbindet. Desweiteren lassen sich über Templates schnell einfache Beispielprogramme erstellen. Dem Softwareprojekt ist eine Makefile Struktur hinterlegt, die bei Änderungen an dem Source Code relevante Teile neu kompiliert. Außerdem ist es möglich, das FPGA bit dem aktualisierten Bitfile zu programmieren und auch zu debuggen.
+Mit dem SDK ist es möglich, Software für den Microblaze zu erstellen. Basierend auf der exportierten Hardware kann das SDK ein Board Support Package (BSP) erstellen, welches alle relevanten Treiber einbindet. Desweiteren lassen sich über Templates schnell einfache Beispielprogramme erstellen. Dem Softwareprojekt ist eine Makefile Struktur hinterlegt, die bei Änderungen an dem Source Code relevante Teile neu kompiliert. Außerdem ist es möglich, das FPGA bit dem aktualisierten Bitfile zu programmieren und auch zu debuggen. \cite{MBTOOLS}
 
 \subsection{FSL}
-FSL ist eine unidirektionale Punkt-zu-Punkt Verbindung die eine einfache und schnelle Datenübertragung zwischen Hardware ermöglicht, die das FSL Interface implementiert. Xilinx bietet als Implementierung eines FSL-Buses den \textit{FSL V20 Bus} IP-Core an. Diese Hardware bietet eine auf First-In-First-Out (FIFO) Speichern basierte Kommunikation. Abbildung \ref{fig:FSLBSB} zeigt das Blockschaltbild der FSL-Bus Komponente.\\
+FSL ist eine unidirektionale Punkt-zu-Punkt Verbindung die eine einfache und schnelle Datenübertragung zwischen Hardware ermöglicht, die das FSL-Interface implementiert. Xilinx bietet als Implementierung eines FSL-Buses den \textit{FSL V20 Bus} IP-Core an \cite{FSL_CORE}. Diese Hardware bietet eine auf First-In-First-Out (FIFO) Speichern basierte Kommunikation. Abbildung \ref{fig:FSLBSB} zeigt das Blockschaltbild der FSL-Bus Komponente.\\
 \begin{figure}[th!]
 \centering
 \includegraphics[width=0.7\linewidth]{./bilder/FSLBSB}
-\caption{Blockschaltbild des Xilinx FSL IP-Cores}
+\caption{Blockschaltbild des Xilinx FSL IP-Cores \cite{FSL_CORE}}
 \label{fig:FSLBSB}
 \end{figure}
 \noindent
 Der Bus kann entweder synchron oder asynchron betrieben werden. Für den asynchronen Betrieb stellen Master und Slave eigene Taktsignale zur Verfügung (\textit{FSL\_M\_Clk} und \textit{FSL\_S\_Clk}), für den synchronen Betrieb wird ein globales Signal verwendet, welches nicht im Blockschaltbild dargestellt ist.\\
 Um Daten in den FIFO-Speicher zu schreiben, muss der Master das \textit{FSL\_M\_Write}-Signal anlegen. Dies ist allerdings nur dann möglich, wenn das \textit{FSL\_M\_Full}-Signal anzeigt, dass der Speicher nicht voll ist. Neben einfachen Nutzdaten kann außerdem ein Steuerbit mit übertragen werden, welches beispielsweise dazu genutzt werden kann, um zwischen Steuer- und Nutzdaten zu unterscheiden. Der Slave wiederum kann Daten aus dem Speicher lesen, insofern das \textit{FSL\_S\_Exists}-Signal gesetzt ist.\\
-Für den IP-Core können des weiteren noch Einstellungen über Implementationsart der FIFO-Speicher (Block Random Access Memory (RAM) oder Look Up Table (LU)T RAM), Tiefe des FIFO-Speichers oder Art des Taktmodus (synchron oder asynchron). Für genauere Informationen zu Signalen, Parameter und Zugriff auf den Bus kann das Datenblatt des IP-Cores zu Rate gezogen werden.\\ %TODO Referenz zum Datasheet
+Für den IP-Core können des weiteren noch Einstellungen über Implementationsart der FIFO-Speicher (Block Random Access Memory (RAM) oder Look Up Table (LUT) RAM), Tiefe des FIFO-Speichers oder Art des Taktmodus (synchron oder asynchron) getroffen werden. Für genauere Informationen zu Signalen, Parametern und Zugriff auf den Bus, kann das Datenblatt des IP-Cores zu Rate gezogen werden \cite{FSL_CORE}.\\
 In der ISA des Microblaze sind mit \textit{get},\textit{getd},\textit{put} und \textit{putd} besondere Instruktionen vorhanden, die es ermöglichen, Daten direkt vom Registersatz über das FSL-Interface zu schreiben, bzw. Daten vom FSL-Interface direkt in den Registersatz einzulesen. Dies ermöglicht Übertragungen mit niedriger Latenz.
 \subsection{Speicherinitialisierung im Microblaze}
-Für die Speicherinitialisierung im Microblaze stellt Xilinx das Tool data2mem zur Verfügung. %TODO: Referenz zum Featureblatt
+Für die Speicherinitialisierung im Microblaze stellt Xilinx das Tool data2mem zur Verfügung. \cite{DATA2MEM}
 Data2mem liest sowohl eine textuelle Beschreibung der Speicherarchitektur in Form von Block RAM Memory Map (BMM) Dateien ein, als auch ausführbaren Code in Form von Executable and Linkable Format (ELF) Dateien. Mit diesen Dateien als Input ist es möglich, Speicherinitialisierungen in Form von UCF, Verilog oder Very High Speed Integrated Circuit Hardware Description Language (VHDL) Dateien zu erzeugen, die während der Synthese (UCF Datei) oder Simulation (HDL Dateien) verwendet werden können. Desweiteren ist es möglich, Block RAMs in existierenden Bitfiles zu aktualisieren, ohne den kompletten Toolflow noch einmal durchlaufen zu müssen.\\
 BMM Dateien haben eine eigene Syntax, die anhand des folgenden Ausschnitts einer BMM Datei erklärt wird.
 \newpage
@@ -101,7 +101,7 @@ ADDRESS_MAP microblaze_spmc_0 MICROBLAZE-LE 1
 	END_ADDRESS_SPACE;
 END_ADDRESS_MAP;
 \end{lstlisting}
-\textit{ADDRESS\_MAP} definiert die Speicherabbildung für einen bestimmten Prozessor mit dem Namen \textit{microblaze\_spmc\_0} vom Prozessortyp MICROBLAZE-LE mit der Prozessor ID 1. Es können beliebig viele \textit{ADDRESS\_MAP} Blöcke hinzugefügt werden.\\ \textit{ADDRESS\_SPACE} definieret einen kontinuierlichen Speicherbereich des entsprechenden Prozessors. Innerhalb eines \textit{ADDRESS\_SPACE} Abschnitts können mehrere \textit{ADDRESS\_RANGE} Blöcke vorkommen. Jeder dieser Blöcke beschreibt einen Speicherbereich, mit einer Größe die einer Potenz von Zwei entspricht. So lassen sich auch asymetrische Speicherstrukturen beschreiben.\\
+\textit{ADDRESS\_MAP} definiert die Speicherabbildung für einen bestimmten Prozessor mit dem Namen \textit{microblaze\_spmc\_0} vom Prozessortyp MICROBLAZE-LE mit der Prozessor ID 1. Es können beliebig viele \textit{ADDRESS\_MAP} Blöcke hinzugefügt werden.\\ \textit{ADDRESS\_SPACE} definiert einen kontinuierlichen Speicherbereich des entsprechenden Prozessors. Innerhalb eines \textit{ADDRESS\_SPACE} Abschnitts können mehrere \textit{ADDRESS\_RANGE} Blöcke vorkommen. Jeder dieser Blöcke beschreibt einen Speicherbereich, mit einer Größe die einer Potenz von Zwei entspricht. So lassen sich auch asymetrische Speicherstrukturen beschreiben.\\
 In einem \textit{BUS\_BLOCK} Abschnitt wird beschrieben, wie viele Bitlanes der Speicher hat und welchem Block RAM welche Bitlane zugewiesen ist.
 %\section{AMBA AXI4}
 
