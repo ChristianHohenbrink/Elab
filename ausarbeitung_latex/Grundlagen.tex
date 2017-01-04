@@ -21,8 +21,8 @@ User Constraints File (UCF) und Dateien erstellt, welche für die Simulation des
 \subsection{SpartanMC Toolchain}
 Die SpartanMC Toolchain ist eine, auf Makefiles basierende Toolchain, welche es dem Nutzer erlaubt, neue Projekte zu erstellen, diese zu
 verwalten und den Workflow zu steuern. Durch die Makefiles ist es beispielsweise möglich, JConfig aufzurufen, ein Bitfile zu erstellen, welches
-auf ein FPGA aufgespielt werden kann oder die Simulation zu starten. Alle relevanten Dateien, die zur Ausführung der Regeln in den Makefiles benötigt 
-werden, können von JConfig erzeugt werden (siehe vorheriger Abschnitt). Eine Ausnahme bildet die Firmware, welche der Nutzer selber Schreiben muss (die
+auf ein FPGA aufgespielt werden kann oder die Simulation zu starten. Alle relevanten Dateien, die zur Ausführung der Regeln in den Makefiles eines Projektes benötigt 
+werden, können von JConfig erzeugt werden (siehe vorheriger Abschnitt). Eine Ausnahme bildet die Firmware, welche der Nutzer selbst schreiben muss (die
 Ordnerstruktur kann allerdings ebenfalls durch eine Make-Regel erzeugt werden).\\
 Um ein Bitfile zuerstellen, verwendet die Toolchain die entsprechenden Tools aus der Xilinx ISE Design Suite. Die benötigten Steuerdaten und Kommandozeilenoptionen,
 werden von JConfig erzeugt und in den Dateien \textit{project.mk}, \textit{spartanmc.xst} und \textit{spartanmc.prj} gespeichert.
@@ -42,7 +42,7 @@ Außerdem gibt es noch einige besondere Konstrukte, welche nur für Module einer
 
 \section{Xilinx Embedded Development Kit}
 \subsection{Microblaze}
-Der Microblaze von Xilinx ist ein 32-Bit Softcore Prozessor mit einer Reduced Instruction Set Computer (RISC) Architektur und ist für die Verwendung mit Xilinx FPGAs optimiert. Abbildung \ref{fig:MicroblazeBSB} zeigt das Blockschaltbild des Prozessors.\\
+Der Microblaze von Xilinx ist ein, für die Verwendung mit Xilinx FPGAs optimierter, 32-Bit Softcore Prozessor mit einer Reduced Instruction Set Computer (RISC) Architektur. Abbildung \ref{fig:MicroblazeBSB} zeigt das Blockschaltbild des Prozessors.\\
 \begin{figure}[h!]
 \centering
 \includegraphics[width=1\linewidth]{./bilder/MicroblazeBSB}
@@ -50,7 +50,7 @@ Der Microblaze von Xilinx ist ein 32-Bit Softcore Prozessor mit einer Reduced In
 \label{fig:MicroblazeBSB}
 \end{figure}
 \noindent
-Der Microblaze verfügt über 32 32-Bit general purpose Register, 32-Bit Instruktionen mit drei Operanden und zwei Adress-Modi, einen
+Der Microblaze verfügt über 32 32-Bit breite general purpose Register, 32-Bit Instruktionen mit drei Operanden und zwei Adress-Modi, einen
 32-Bit Addressbus sowie einer Single-Issue-Pipeline.\\
 Neben diesen festen Eigenschaften ist der Microblaze über Parameter flexible konfigurierbar. So ist es beispielsweise möglich, über den Parameter C\_AREA\_OPTIMIZED die Anzahl der Pipelinestufen auf drei oder fünf festzulegen. Weitere Features des Microblaze sind in folgender Liste dargestellt:\\
 \begin{itemize}
@@ -67,7 +67,7 @@ Für weitere Informationen kann das Handbuch des Microblaze zu Rate gezogen werd
 \subsection{XPS}
 Das Xilinx Platform Studio (XPS) ist der Systembuilder von Xilinx. Mit ihm lassen sich per grafischer Oberfläche SoC erstellen. Über einen Wizard kann zu Beginn ein Basis-System erstellt werden, welches sich danach einfach erweitern lässt. Aus einem Katalog von IP-Cores kann zusätzliche Hardware ausgewählt werden, welche dann über einen Wizard konfiguriert werden kann. Desweiteren bietet XPS einfache Möglichkeiten Komponenten untereinander zu verbinden, Adressen von I/O und Speicherblöcken anzupassen und Eingangs- und Ausgangssignale zu verwalten. Außerdem ist es möglich von der Nutzeroberfläche eine Netzliste zu generieren oder das Hardwaredesign (inklusive Bitfile) zum Software Development Kit (SDK) zu exportieren, um Firmware für das SoC zu schreiben. \cite{MBTOOLS}
 \subsection{SDK}
-Mit dem SDK ist es möglich, Software für den Microblaze zu erstellen. Basierend auf der exportierten Hardware kann das SDK ein Board Support Package (BSP) erstellen, welches alle relevanten Treiber einbindet. Desweiteren lassen sich über Templates schnell einfache Beispielprogramme erstellen. Dem Softwareprojekt ist eine Makefile Struktur hinterlegt, die bei Änderungen an dem Source Code relevante Teile neu kompiliert. Außerdem ist es möglich, das FPGA bit dem aktualisierten Bitfile zu programmieren und auch zu debuggen. \cite{MBTOOLS}
+Mit dem SDK ist es möglich, Software für den Microblaze zu erstellen. Basierend auf der exportierten Hardware kann das SDK ein Board Support Package (BSP) erstellen, welches alle relevanten Treiber einbindet. Desweiteren lassen sich über Templates schnell einfache Beispielprogramme erstellen. Dem Softwareprojekt ist eine Makefile Struktur hinterlegt, die bei Änderungen an dem Source Code relevante Teile neu kompiliert. Außerdem ist es möglich, das FPGA mit dem aktualisierten Bitfile zu programmieren und auch zu debuggen. \cite{MBTOOLS}
 
 \subsection{FSL}
 FSL ist eine unidirektionale Punkt-zu-Punkt Verbindung die eine einfache und schnelle Datenübertragung zwischen Hardware ermöglicht, die das FSL-Interface implementiert. Xilinx bietet als Implementierung eines FSL-Buses den \textit{FSL V20 Bus} IP-Core an \cite{FSL_CORE}. Diese Hardware bietet eine auf First-In-First-Out (FIFO) Speichern basierte Kommunikation. Abbildung \ref{fig:FSLBSB} zeigt das Blockschaltbild der FSL-Bus Komponente.\\
