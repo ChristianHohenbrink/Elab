@@ -1,19 +1,20 @@
 \chapter{Evaluation}
-%\begin{itemize}
-%\item \textbf{Änderungsmöglichkeiten kleinerer Art}
-%\begin{itemize}
-%\item[-] Löschen einer Funktion
-%\item[-] Hinzufügen einer Funktion
-%\item[-] Umbenennen einer Funktion
-%\item[-] Ändern des Körpers einer Funktion 
-%\end{itemize}
-%\end{itemize}
-%Diese Änderungen kleinerer Art führten bei meiner Programmierung zu korrekten Ergebnissen.
-%\begin{itemize}
-%\item \textbf{Funktionalitätsänderungen}
-%\begin{itemize}
-%\item[-] Ein kleines Programm in ein großes Programm ändern.
-%\item[-] Ein großes Programm zu einem anderen großen Programm ändern.
-%\item[-] Ein großes Programm in ein kleines Programm ändern.
-%\end{itemize}
-%\end{itemize}
+\section{Vorgehensweise}
+In diesem Kapitel soll der erreichte Grad der Integration des Microblaze in die SpartanMC Entwicklungsumgebung evaluiert werden. Dabei soll nicht nur gezeigt werden, dass auf Microblaze basierende Systeme erstellt und synthetisiert werden können, sodern auch, dass die Integration die ursprüngliche Funktionalität nicht negativ beeinflusst. Hierzu soll zunächst ein einfaches System mit allen hinzugefügten Komponenten mit JConfig erstellt, anschließend mit der Toolchain ein Bitfile erzeugt werden. Außerdem sollen die Aktualisierung des Bitfiles und die Speicherinitialisierung für die Simulation ausgeführt werden. Dies soll zeigen, dass die Integration des Microblaze in JConfig erfolgreich war und dass die Anpassungen an den Makefiles zur Speicherinitialisierung ebenfalls funktionieren.\\
+Desweiteren soll Software mit dem SDK von Xilinx geschrieben werden, welche sowohl die FSL-Blöcke als auch den UART-Core verwendet. Mit data2mem soll aus dem entstehenden ELF-File eine Speicherinitialisierung für die Simulation in Form einer Verilog-Datei erfolgen. Das System muss anschließend simuliert werden um die Funktionalität der einzelnen Systemkomponenten zu verifizieren.\\
+Um zu zeigen, dass die Änderungen keinen negativen Einfluss auf SpartanMC-Systeme haben, soll der Workflow mit zwei weiteren Systemen durchlaufen werden. Das eine System soll nur SpartanMC-Instanzen beinhalten, während das andere sowohl einen SpartanMC, als auch einen Microblaze beinhalten.
+\section{Erstellen des Testsystems mit JConfig}
+Grobe Gliederung:
+<Bild von JConfig-Konfiguration anzeigen und kurz erläutern, was zu sehen ist. Kurz Parametrisierung erwähnen. Erwähnen, dass das Zusammenfassen von FSL- und Speicherinterface zu Bussen die Verdrahtung erleichtert und das wiring von AXI-Signalen mühsam ist. Anmerken, dass ein groovy-script die Konfiguration des Microblaze noch verschnellern könnte. Erläuterungen er Parameter neben den Eingabefeldern macht das Parametrisieren einfacher, aliasing von manchen Parametern macht das ganze verständlicher. Ansonsten fühlt es sich ähnlich wie beim erstellen von SpartanMC-Systemen an.>
+\section{Verwendung der Toolchain}
+Grobe Gliederung:
+<An der Nutzung der Toolchain hat sich für den Endnutzer prinzipiell nichts geändert was gut ist. Kurz darauf eingehen, welche Kommandozeilenbefehle eingegeben wurden um die Speicherintialisierung durchlaufen zu lassen. Wie wird überprüft, ob die Speicherinitialisierung erfolgreich war? Für die Simulation kurz darauf hinweisen, dass der Speicherinhalt Quatsch ist, da der MB GCC noch nicht integriert ist, aber dem Simulator das egal ist wenn er die Simulation starten möchte >
+\section{Erstellen der Testsoftware und Erzeugung der Speicherinitialisierung für die Simulation}
+Grobe Gliederung:
+<Kurz beschreiben, wie vorgegangen wurde -> mit XPS Hardware zusammenbauen, die dem Testsystem ähnlich ist (evtl kleines Bild), dann SDK aufrufen und die Code Snippets für die beiden Prozessoren zeigen, Schritte für manuelle Speicherinitialisierung erläutern (evtl auf Kapitel Benutzungshinweise bezug nehmen).>
+\section{Simulationsergebnisse}
+Grobe Gliederung:
+<Zeigen, dass in der Simulation der Microblaze Instruktionen erfolgreich aus dem Speicher liest, die Kommunikation über FSL funktioniert und dass das Ansprechen der UART über den AXI-Bus nicht klappt, weil aus irgendeinem Grund die Steuersignale vom Microblaze nicht gesetzt werden. Als Vergleich dann noch die Simulationsergebnisse des vom XPS erzeugten System in dem es funktioniert. Kurz drauf eingehen, was getan wurde um den Fehler zu finden und dass ich am Ende immer noch keinen Plan hab, warum der Microblaze sich weigert, die Steuersignale zu setzen.>
+\section{SpartanMC- und Hybrid-Systeme}
+Grobe Gliederung:
+<Abschließend kurz beschreiben, wie die Systeme aussehen, dass die gleichen Tests wie oben stattgefunden haben, dass die memory.bmm im Falle des SPMC-only Systems wie erwartet nicht erzeugt wird und das im Hybrid-System die Speicher in der passenden Memory-Map auftauchen. Ansonsten klappt alles.>

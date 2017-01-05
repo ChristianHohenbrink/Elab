@@ -82,7 +82,7 @@ Der Bus kann entweder synchron oder asynchron betrieben werden. Für den asynchr
 Um Daten in den FIFO-Speicher zu schreiben, muss der Master das \textit{FSL\_M\_Write}-Signal anlegen. Dies ist allerdings nur dann möglich, wenn das \textit{FSL\_M\_Full}-Signal anzeigt, dass der Speicher nicht voll ist. Neben einfachen Nutzdaten kann außerdem ein Steuerbit mit übertragen werden, welches beispielsweise dazu genutzt werden kann, um zwischen Steuer- und Nutzdaten zu unterscheiden. Der Slave wiederum kann Daten aus dem Speicher lesen, insofern das \textit{FSL\_S\_Exists}-Signal gesetzt ist.\\
 Für den IP-Core können des weiteren noch Einstellungen über Implementationsart der FIFO-Speicher (Block Random Access Memory (RAM) oder Look Up Table (LUT) RAM), Tiefe des FIFO-Speichers oder Art des Taktmodus (synchron oder asynchron) getroffen werden. Für genauere Informationen zu Signalen, Parametern und Zugriff auf den Bus, kann das Datenblatt des IP-Cores zu Rate gezogen werden \cite{FSL_CORE}.\\
 In der ISA des Microblaze sind mit \textit{get},\textit{getd},\textit{put} und \textit{putd} besondere Instruktionen vorhanden, die es ermöglichen, Daten direkt vom Registersatz über das FSL-Interface zu schreiben, bzw. Daten vom FSL-Interface direkt in den Registersatz einzulesen. Dies ermöglicht Übertragungen mit niedriger Latenz.
-\subsection{Speicherinitialisierung im Microblaze}
+\subsection{Speicherinitialisierung im Microblaze} \label{subsec:MemInitBMM}
 Für die Speicherinitialisierung im Microblaze stellt Xilinx das Tool data2mem zur Verfügung. \cite{DATA2MEM}
 Data2mem liest sowohl eine textuelle Beschreibung der Speicherarchitektur in Form von Block RAM Memory Map (BMM) Dateien ein, als auch ausführbaren Code in Form von Executable and Linkable Format (ELF) Dateien. Mit diesen Dateien als Input ist es möglich, Speicherinitialisierungen in Form von UCF, Verilog oder Very High Speed Integrated Circuit Hardware Description Language (VHDL) Dateien zu erzeugen, die während der Synthese (UCF Datei) oder Simulation (HDL Dateien) verwendet werden können. Desweiteren ist es möglich, Block RAMs in existierenden Bitfiles zu aktualisieren, ohne den kompletten Toolflow noch einmal durchlaufen zu müssen.\\
 BMM Dateien haben eine eigene Syntax, die anhand des folgenden Ausschnitts einer BMM Datei erklärt wird.
@@ -103,19 +103,3 @@ END_ADDRESS_MAP;
 \end{lstlisting}
 \textit{ADDRESS\_MAP} definiert die Speicherabbildung für einen bestimmten Prozessor mit dem Namen \textit{microblaze\_spmc\_0} vom Prozessortyp MICROBLAZE-LE mit der Prozessor ID 1. Es können beliebig viele \textit{ADDRESS\_MAP} Blöcke hinzugefügt werden.\\ \textit{ADDRESS\_SPACE} definiert einen kontinuierlichen Speicherbereich des entsprechenden Prozessors. Innerhalb eines \textit{ADDRESS\_SPACE} Abschnitts können mehrere \textit{ADDRESS\_RANGE} Blöcke vorkommen. Jeder dieser Blöcke beschreibt einen Speicherbereich, mit einer Größe die einer Potenz von Zwei entspricht. So lassen sich auch asymetrische Speicherstrukturen beschreiben.\\
 In einem \textit{BUS\_BLOCK} Abschnitt wird beschrieben, wie viele Bitlanes der Speicher hat und welchem Block RAM welche Bitlane zugewiesen ist.
-%\section{AMBA AXI4}
-
-%\section{VHDL-Konzept: Library}
-
-%\section{Software Tools}
-
-%\section{SpartanMC Hex Format}
-
-%\section{make-toolchain}
-
-%\begin{figure}
-%\centering
-%\includegraphics[height=16cm, angle=90]{./bilder/XDL}
-%\caption{Die drei Haupttypen des XDL-Formats und ihre Syntax}
-%\label{fig:XDL-Format}
-%\end{figure}
