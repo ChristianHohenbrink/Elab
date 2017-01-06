@@ -1,4 +1,34 @@
 \chapter{Benutzungshinweise}
-Grobe Gliederung:
-<JConfig: Hinweise darauf, dass bei Verwendung der FSL-Blöcke der Parameter C\_FSL\_LINKS des Microblaze manuel auf die Anzahl der verwendeten Blöcke gesetzt werden muss.>
-<Speicherinitialisierung: Da der GCC noch nicht integriert ist, muss die Speicherinitialisierung manuell erfolgen. Dafür wurden im hardware ordner des Microblaze zwei elf-files, eine readme und ein Skript hinterlegt, welches mehrere Verilog-Dateien zu einer zusammenfügt ähnlich wie das skript, was der maketoolchain hinzugefügt wurde.>
+Um die Verwendung des Microblaze in der SpartanMC Entwicklungsumgebung zu erklären, wird an dieser Stelle Stück für Stück ein einfaches \textit{"Hello World!"}-Beispiel erstellt.
+Hierzu wird zunächst ein neues SpartanMC-Projekt angelegt und JConfig gestartet. Der erste Schritt ist es, den Microblaze Prozessor hinzuzufügen. Der Prozessor ist unter \textit{``Subsystem modules --> Processors --> Microblaze core''} zu finden. Als nächstes wird ein Speichermodul für den Microblaze hinzugefügt, welches unter \textit{``Common modules --> Memory --> Microblaze Local Memory''} zu finden ist. Zur Ausgabe des Strings \textit{``Hello World!''} wird noch ein UART-Core benötigt. Dieser findet sich unter \textit{``Peripheral modules --> Bus --> AXI UART Light''}. Die Parametrisierung für die eingebunden Komponenten wird, bis auf die Baudrate der UART nicht verändert. Diese wird auf 115200 gestellt, um in der Simulation nicht lange auf Ergebnisse warten zu müssen. Zuletzt wird noch ein Modul zur Takterzeugung eingebunden, welches unter \textit{``Common modules --> Clocks --> Xilinx DCM Clock''} zu finden ist. An der Konfiguration des Taktmoduls wird ebenfalls nichts verändert.\\
+Der nächste Schritt ist das Verbinden der Signale. Beim Betrachten der Verbindungen wird festgestellt, dass der Microblaze bereits mit dem Speicher- und Takterzeugungsmodul verbunden ist. Das Signal \textit{reset} muss noch mit dem Pin, der das Reset-Signal führt, verbunden werden (für das SP601 ist dies N4). Desweiteren müssen die AXI-Signale mit den gleichnamigen Signalen des UART-Cores verbunden werden. Bei den Adresssignalen muss eine partielle Verbindung erstellt werden. Der UART-Core wird noch mit dem Taktsignal und dem Reset-Signal \textit{peri\_resetn} des Microblaze verbunden. Das TX-Signal muss auf dem SP601 mit dem Pin K14 verbunden werden und das RX-Signal mit L12.\\
+Desweiteren ist für die Konfiguration unter dem Reiter \textit{Target} in das Feld \textit{Simulation Library Path} der absolute Pfad zu den Simulationslibraries einzugegeben. Das erstellte System ist in Abbildung \ref{fig:ExampleSystem} zu sehen.
+
+\begin{figure}[th!]
+\centering
+\includegraphics[width=1\linewidth]{./bilder/ExampleSystem}
+\caption{\textit{"Hello World!"} Beispielsystem}
+\label{fig:ExampleSystem}
+\end{figure}
+\noindent
+Bevor die für die Toolchain relevanten Dateien erzeugt werden können, muss zunächst eine Dummy-Firmware erzeugt werden. Hierzu wird der Befehl \textit{make newfirmware +path=<path-to-firmware>} verwendet. In der Verzeichnisstruktur muss im Ordner \textit{src} eine Datei namens \textit{main.c} hinzugefügt werden. In dieser Datei muss eine Funktion namens \textit{main} implementiert sein. Der Inhalt dieser Funktion ist egal, da der Microblaze GCC noch nicht in die Toolchain integriert ist und die Speicherintialisierung manuel durchgeführt wird. Für dieses Beispiel soll folgender Code verwendet werden. Im Anschluss wird in JConfig auf \textit{Build All} geklickt um die Dateien zu erzeugen.
+\begin{lstlisting}
+#include <subsystems/microblaze_spmc_0/peripherals.h>
+#include <stdio.h>
+void main() {
+	while(1){
+		printf("hello world\n");
+	}
+}
+\end{lstlisting}
+Für den Fall, dass das Beispielsystem mit Hardware verwendet werden soll, muss nun eine Bitfile mit \textit{make all} generiert werden. Im Verzeichnis \textit{``spartanmc/hardware/microblaze/example''} ist eine ELF-Datei namens \textit{hello\_world.elf} zu finden. Diese enthält ausführbaren Code für ein einfaches, dem oben beschriebenen SoC sehr ähnlichem System. Die ELF-Datei beschreibt ein simples \textit{"Hello World!"} Programm. Mit data2mem wird nun das Bitfile manuel aktualisiert. Der Aufruf ist wie folgt:\\\\
+\indent
+\textit{data2mem -bm memory\_bd.bmm -bd hello\_world.elf tag microblaze\_spmc\_0\\
+\indent \indent \indent -bt spartanmc.bit -o b spartanmc.bit}\\\\
+Danach kann mit \textit{make program} das Bitfile auf das FPGA gespielt werden.\\
+Für den Fall, dass das Beispielsystem simuliert werden soll, muss zunächst eine Speicherinitialisierung in Form einer Verilog-Datei erzeugt werden. Dazu ist folgender Aufruf von data2mem notwendig:\\\\
+\indent
+\textit{data2mem -bm memory.bmm -bd hello\_world.elf tag microblaze\_spmc\_0 -o v sim1.v}\\\\
+Im selben Verzeichnis in dem sich die ELF-Datei befindet, existiert ein Shell-Skript namens \textit{mksim}, welches die Verilog-Datei für die Simulation präpariert. Der entsprechende Kommandozeilenbefehl ist folgender:\\\\
+\indent \textit{sh mksim sim1.v}\\\\
+Dadurch wird die Datei \textit{init\_ram.v} erstellt. Diese Datei wird im SpartanMC-Projekt im Verzeichnis \textit{build} abgelegt. Nun muss noch der Eintrag \textit{spartanmc\_sim.v} in der Datei \textit{system/spartanmc\_worklib.fdo} in \textit{init\_ram.v} umgeändert werden. Als nächster Schritt folgt das Erzeugen eines Simulationsverzeichnisse mit dem Befehl \textit{make newsim +path=<path-to-sim>} und abschließend das Starten der Simulation im neuen Verzeichnis mit \textit{vsim -do testbench.fdo}. Der Simulatior sollte starten und das System kann simuliert werden. 
